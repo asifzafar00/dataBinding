@@ -1,13 +1,13 @@
 package com.example.bindingdata
 
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.provider.Settings.Global
 import android.util.Log
 import android.view.View
-import androidx.room.Room
+import androidx.appcompat.app.AppCompatActivity
+import com.example.bindingdata.ContactDatabase.Companion.getDatabaseObject
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
+import java.util.Date
 
 class MainActivity : AppCompatActivity() {
     lateinit var database: ContactDatabase
@@ -15,24 +15,17 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        database = Room.databaseBuilder(
-            applicationContext,
-            ContactDatabase::class.java,
-            "contactDB"
-        ).build()
 
         GlobalScope.launch {
-
-            database.contactDAO().insertContact(contact = Contact(0, "John", "99999"))
+            database = getDatabaseObject(applicationContext)
+            database.contactDAO()
+                .insertContact(contact = Contact(0, "John", "99999", Date()))
         }
-
-
     }
 
     fun showData(v: View) {
         database.contactDAO().getContact().observe(this) {
-            Log.e(TAG, "showData: " + it.toString())
-
+            Log.e(TAG, "ShowData: " + it.toString())
         }
     }
 }
